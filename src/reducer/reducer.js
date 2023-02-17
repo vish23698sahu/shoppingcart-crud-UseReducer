@@ -1,6 +1,5 @@
 
 const reducer = (state, action) => {
-
     if (action.type === 'CLEAR_CART') {
         return { ...state, cart: [] }
     }
@@ -25,12 +24,29 @@ const reducer = (state, action) => {
             if (cartItem.id === action.payload)
                 return { ...cartItem, amount: cartItem.amount - 1 }
             return cartItem
-        }).filter((i) => i.amount !== 0)
+        }).filter((cartItem) => cartItem.amount !== 0)
         return { ...state, cart: tempCard }
     }
 
-    return state
+    if (action.type === 'GET_TOTALS') {
+        let { total, amount } = state.cart.reduce((cartTotal, cartItem) => {
+            const { price, amount } = cartItem;
+            const itemTotal = price * amount
 
+            cartTotal.total += itemTotal
+            cartTotal.amount += amount
+
+            return cartTotal
+        }, {
+            total: 0,
+            amount: 0
+        })
+        total = parseFloat(total.toFixed(2))
+
+        return { ...state, total, amount }
+    }
+
+    return state
 }
 
 export default reducer
